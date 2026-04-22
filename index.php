@@ -3,7 +3,7 @@ session_start();
 require 'db.php';
 
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php"); 
+    header("Location: ensembles.php"); 
     exit();
 }
 
@@ -24,13 +24,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user = $result->fetch_assoc();
             
             if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['first_name'] = $user['first_name'];
-                $_SESSION['last_name'] = $user['last_name'];
-                $_SESSION['userrole'] = $user['userrole'] ?? 'admin'; // ปรับตาม column ใน DB ของคุณ
-                
-                header("Location: ensembles.php"); // แก้เป็นหน้าแรกของ Admin
-                exit();
+                if (isset($user['userrole']) && $user['userrole'] === 'user') {
+                    $error_message = "บัญชีนี้ไม่มีสิทธิ์เข้าถึงส่วนผู้ดูแลระบบ";
+                } else {
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['first_name'] = $user['first_name'];
+                    $_SESSION['last_name'] = $user['last_name'];
+                    $_SESSION['userrole'] = $user['userrole'] ?? 'admin';
+                    
+                    header("Location: ensembles.php");
+                    exit();
+                }
             } else {
                 $error_message = "รหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง";
             }
@@ -56,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <style>
         :root {
-            /* โทนสีทอง-กรมท่า ดูพรีเมียมและเข้ากับศิลปะไทย/ดนตรี */
             --bg-gradient-1: #0f2027;
             --bg-gradient-2: #203a43;
             --bg-gradient-3: #2c5364;
