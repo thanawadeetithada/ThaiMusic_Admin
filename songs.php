@@ -27,6 +27,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_song'])) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_song'])) {
+    $del_id = intval($_POST['delete_song_id']);
+    
+    $track_stmt = $conn->prepare("SELECT audio_file, instrument_icon FROM tracks WHERE song_id = ?");
+    $track_stmt->bind_param("i", $del_id);
+    $track_stmt->execute();
+    $track_res = $track_stmt->get_result();
+    
+    while ($track = $track_res->fetch_assoc()) {
+        if (!empty($track['audio_file']) && file_exists("uploads/audio/" . $track['audio_file'])) {
+            unlink("uploads/audio/" . $track['audio_file']);
+        }
+        if (!empty($track['instrument_icon']) && file_exists("uploads/images/" . $track['instrument_icon'])) {
+            unlink("uploads/images/" . $track['instrument_icon']);
+        }
+    }
+    
+    $del_stmt = $conn->prepare("DELETE FROM songs WHERE song_id = ?");
+    $del_stmt->bind_param("i", $del_id);
+    $del_stmt->execute();
+    
+    header("Location: songs.php?ensemble_id=" . $ensemble_id);
+    exit();
+}
+
 $songs = $conn->query("SELECT * FROM songs WHERE ensemble_id = $ensemble_id ORDER BY song_id DESC");
 ?>
 <!DOCTYPE html>
@@ -79,7 +104,7 @@ $songs = $conn->query("SELECT * FROM songs WHERE ensemble_id = $ensemble_id ORDE
 
     <?php include 'sidebar.php'; ?>
 
-    <main class="content-area">
+    <main class="content-area pb-5">
 
         <div class="d-flex align-items-center mb-4">
             <a href="ensembles.php" class="btn btn-m"><i class="fa-solid fa-arrow-left me-1"></i></a>
@@ -118,7 +143,7 @@ $songs = $conn->query("SELECT * FROM songs WHERE ensemble_id = $ensemble_id ORDE
                             <tr>
                                 <th class="ps-4">ชื่อเพลง</th>
                                 <th>BPM</th>
-                                <th width="20%" class="text-center">จัดการ</th>
+                                <th width="25%" class="text-center">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,10 +152,18 @@ $songs = $conn->query("SELECT * FROM songs WHERE ensemble_id = $ensemble_id ORDE
                                 <td class="fw-bold text-dark ps-4"><?= htmlspecialchars($row['title']) ?></td>
                                 <td><?= $row['bpm'] ?></td>
                                 <td class="text-center">
-                                    <a href="tracks.php?song_id=<?= $row['song_id'] ?>"
-                                        class="btn btn-sm btn-outline-success px-3">
-                                        แทร็กเครื่องดนตรี <i class="fa-solid fa-sliders ms-1"></i>
-                                    </a>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="tracks.php?song_id=<?= $row['song_id'] ?>"
+                                            class="btn btn-sm btn-outline-success px-3">
+                                            แทร็กเครื่องดนตรี <i class="fa-solid fa-sliders ms-1"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger px-3 delete-btn"
+                                            data-id="<?= $row['song_id'] ?>"
+                                            data-name="<?= htmlspecialchars($row['title']) ?>"
+                                            data-bs-toggle="modal" data-bs-target="#deleteSongModal">
+                                            <i class="fa-solid fa-trash"></i> ลบ
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -148,7 +181,45 @@ $songs = $conn->query("SELECT * FROM songs WHERE ensemble_id = $ensemble_id ORDE
     </main>
     </div>
 
+    <div class="modal fade" id="deleteSongModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content border-0 shadow">
+                <form action="" method="POST">
+                    <input type="hidden" name="delete_song" value="1">
+                    <input type="hidden" name="delete_song_id" id="del_id">
+                    
+                    <div class="modal-body text-center p-4 p-md-5">
+                        <i class="fa-solid fa-triangle-exclamation text-danger mb-3" style="font-size: 60px;"></i>
+                        <h4 class="mb-3 fw-bold text-dark">ยืนยันการลบเพลง?</h4>
+                        
+                        <p class="text-muted mb-4" style="font-size: 15px;">
+                            คุณต้องการลบเพลง <strong id="del_name" class="text-dark fs-5"></strong> ใช่หรือไม่?<br>
+                            <span class="d-block mt-3 bg-danger-subtle text-danger p-2 rounded">
+                                <i class="fa-solid fa-circle-info me-1"></i> ไฟล์เสียงแทร็กและรูปภาพทั้งหมดที่อยู่ในเพลงนี้ จะถูกลบออกแบบถาวรทั้งหมด!
+                            </span>
+                        </p>
+                        
+                        <div class="d-flex justify-content-center gap-2">
+                            <button type="button" class="btn btn-secondary w-50 py-2 fw-bold" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="submit" class="btn btn-danger w-50 py-2 fw-bold">ยืนยันการลบ</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.getElementById('del_id').value = this.getAttribute('data-id');
+                    document.getElementById('del_name').innerText = this.getAttribute('data-name');
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
