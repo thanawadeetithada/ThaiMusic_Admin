@@ -30,7 +30,7 @@ try {
             $stmt->bind_param("sss", $token, $expiry, $email);
             $stmt->execute();
 
-            $resetLink = "https://smoscitechkpru.ct.ws/reset_password.php?token=$token";  //Edit redirect to app
+            $resetLink = "https://thaimusic-admin.com/reset_password.php?token=$token";  //Edit redirect to app
 
             $mail = new PHPMailer(true);
             $mail->CharSet = "UTF-8";

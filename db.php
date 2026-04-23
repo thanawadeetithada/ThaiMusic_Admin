@@ -1,9 +1,9 @@
 <?php
 // db.php
-$host = "127.0.0.1";
-$user = "root"; // ใส่ username ของ MySQL
-$pass = "";     // ใส่ password ของ MySQL (ถ้า XAMPP ปกติจะว่าง)
-$dbname = "thaimusicdb";
+$host = "thaimusic-admin.com";
+$user = "u547809419_admthaimusic"; // ใส่ username ของ MySQL
+$pass = "3@Bq1!ej";     // ใส่ password ของ MySQL (ถ้า XAMPP ปกติจะว่าง)
+$dbname = "u547809419_thaimusicdb";
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 
