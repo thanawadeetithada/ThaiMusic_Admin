@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         overflow-x: hidden;
     }
 
-    /* --- Sidebar Styles --- */
+    
     .sidebar {
         width: 250px;
         height: 100vh;
@@ -76,14 +76,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: #fff;
     }
 
-    /* เมนูที่กำลังใช้งานอยู่ */
+    
     .sidebar-nav a.active {
         background-color: var(--primary-gold);
         color: #fff;
         box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
     }
 
-    /* --- Navbar Styles --- */
+    
     .top-navbar {
         height: 70px;
         background-color: var(--topbar-bg);
@@ -107,7 +107,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: var(--primary-gold);
     }
 
-    /* --- Layout Wrapper --- */
+    
     .main-wrapper {
         margin-left: 250px;
         transition: all 0.3s ease;
@@ -121,18 +121,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
         flex-grow: 1;
     }
 
-    /* --- Responsive สำหรับมือถือ --- */
+    
     @media (max-width: 768px) {
         .sidebar {
-            left: -250px; /* ซ่อน Sidebar ไว้ด้านซ้าย */
+            left: -250px; 
         }
         .sidebar.active {
-            left: 0; /* โชว์ Sidebar เมื่อมีคลาส active */
+            left: 0; 
         }
         .main-wrapper {
             margin-left: 0;
         }
-        /* เงาดำๆ เวลาเปิดเมนูในมือถือ */
+        
         .sidebar-overlay {
             display: none;
             position: fixed;

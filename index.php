@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             --bg-gradient-1: #0f2027;
             --bg-gradient-2: #203a43;
             --bg-gradient-3: #2c5364;
-            --primary-color: #d4af37; /* สีทอง */
+            --primary-color: #d4af37;
             --primary-hover: #b5952f;
             --text-dark: #333333;
         }

@@ -42,6 +42,7 @@ if ($result->num_rows === 0) {
     <meta name="theme-color" content="#96a1cd">
     <title>เปลี่ยนรหัสผ่าน</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
     body {
         font-family: 'Prompt', sans-serif;
@@ -80,14 +81,33 @@ if ($result->num_rows === 0) {
         width: 45%;
         font-size: 16px;
         text-align: left;
+    }   
+    .input-wrapper {
+        position: relative;
+        width: 50%;
     }
 
-    .form-group input {
-        width: 50%;
+    .input-wrapper input {
+        width: 100%;
         padding: 10px;
+        padding-right: 40px;
         border: 1px solid #ccc;
         border-radius: 8px;
         font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+    }
+
+    .toggle-password:hover {
+        color: #333;
     }
 
     button {
@@ -110,6 +130,7 @@ if ($result->num_rows === 0) {
     .modal-content {
         background: rgba(255, 255, 255, 0.97);
         border-radius: 20px;
+        transition: transform 0.25s ease-in-out;
         animation: fadeInUp 0.3s ease-in-out;
     }
 
@@ -118,19 +139,10 @@ if ($result->num_rows === 0) {
             opacity: 0;
             transform: translateY(20px);
         }
-
         to {
             opacity: 1;
             transform: translateY(0);
         }
-    }
-
-
-    .modal-content {
-        background: rgba(255, 255, 255, 0.97);
-        border-radius: 20px;
-        transition: transform 0.25s ease-in-out;
-        animation: fadeInUp 0.3s ease-in-out;
     }
 
     .modal.fade .modal-dialog {
@@ -165,16 +177,25 @@ if ($result->num_rows === 0) {
 <body>
     <div class="container">
         <h2>เปลี่ยนรหัสผ่าน</h2>
-        <form action="process_reset_password.php" method="POST">
+        <form action="app_process_reset_password.php" method="POST">
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+            
             <div class="form-group">
                 <label for="password">รหัสผ่านใหม่</label>
-                <input type="password" name="password" id="password" required>
+                <div class="input-wrapper">
+                    <input type="password" name="password" id="password" required>
+                    <i class="fas fa-eye-slash toggle-password" toggle="#password"></i>
+                </div>
             </div>
+            
             <div class="form-group">
                 <label for="confirm_password">ยืนยันรหัสผ่าน</label>
-                <input type="password" name="confirm_password" id="confirm_password" required>
+                <div class="input-wrapper">
+                    <input type="password" name="confirm_password" id="confirm_password" required>
+                    <i class="fas fa-eye-slash toggle-password" toggle="#confirm_password"></i>
+                </div>
             </div>
+            
             <button type="submit">เปลี่ยนรหัสผ่าน</button>
         </form>
     </div>
@@ -222,9 +243,21 @@ if ($result->num_rows === 0) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
     $(document).ready(function() {
+        // จัดการ Modal แจ้งเตือน
         <?php if (!empty($modal_message)): ?>
         $('#messageModal').modal('show');
         <?php endif; ?>
+
+        // สคริปต์เปิด-ปิดรหัสผ่าน
+        $(".toggle-password").click(function() {
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            var input = $($(this).attr("toggle"));
+            if (input.attr("type") == "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
     });
     </script>
 </body>
