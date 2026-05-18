@@ -9,15 +9,12 @@ if (!isset($_SESSION['user_id']) || $_SESSION['userrole'] === 'user') {
 
 $song_id = $_GET['song_id'] ?? 0;
 
-
 $stmt = $conn->prepare("SELECT title, ensemble_id FROM songs WHERE song_id = ?");
 $stmt->bind_param("i", $song_id);
 $stmt->execute();
 $song = $stmt->get_result()->fetch_assoc();
 
 if (!$song) die("ไม่พบเพลงที่เลือก");
-
-
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_track'])) {
@@ -65,7 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_track'])) {
 
     if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] == 0) {
         if(!empty($current['audio_file']) && file_exists("uploads/audio/".$current['audio_file'])) unlink("uploads/audio/".$current['audio_file']);
-        $audio_file = "audio_" . time() . "_" . uniqid() . "." . strtolower(pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION));
+        $audio_file = "audio_" . time() . "_" . uniqid() . "." . $ext;
         move_uploaded_file($_FILES['audio_file']['tmp_name'], "uploads/audio/" . $audio_file);
     }
 
